@@ -2,11 +2,13 @@
   "name": "nextjs-analytics-dashboard",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dev:server": "ts-node server/server.ts"
   },
   "dependencies": {
     "react": "^19.0.0",
