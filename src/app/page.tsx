@@ -1,6 +1,5 @@
 "use client";
 
-// 15:51 time
 import { useEffect, useState } from "react";
 
 export default function Home() {
