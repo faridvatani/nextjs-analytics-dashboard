@@ -1,0 +1,50 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["analytics"]
+}
+
+// User sessions on your website
+model Session {
+  id           String        @id @default(uuid())
+  userId       String?
+  startedAt    DateTime      @default(now())
+  endedAt      DateTime?
+  pageViews    PageView[]
+  interactions Interaction[]
+
+  @@schema("analytics")
+}
+
+// Individual page views within a session
+model PageView {
+  id        String   @id @default(uuid())
+  sessionId String
+  pageUrl   String
+  pageTitle String?
+  referrer  String?
+  viewedAt  DateTime @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id])
+
+  @@schema("analytics")
+}
+
+// User interactions (clicks, form submissions, etc.)
+model Interaction {
+  id              String   @id @default(uuid())
+  sessionId       String
+  elementId       String
+  elementType     String
+  interactionType String
+  interactedAt    DateTime @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id])
+
+  @@schema("analytics")
+}
