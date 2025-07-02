@@ -61,7 +61,7 @@ export const schema = z.object({
   id: z.number(),
   pageUrl: z.string(),
   pageTitle: z.string(),
-  referrer: z.string(),
+  referrer: z.string().nullable(),
   viewedAt: z.string(),
 });
 
@@ -83,9 +83,11 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     header: "Referrer",
     cell: ({ row }) => (
       <Badge variant="outline" className="text-muted-foreground px-1.5">
-        {row.original.referrer.includes("https://")
-          ? row.original.referrer.replace("https://", "")
-          : row.original.referrer}
+        {row.original.referrer
+          ? row.original.referrer.includes("https://")
+            ? row.original.referrer.replace("https://", "")
+            : row.original.referrer
+          : "Direct"}
       </Badge>
     ),
   },
@@ -100,12 +102,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
 ];
 
-export function DataTable({
-  data: initialData,
-}: {
-  data: z.infer<typeof schema>[];
-}) {
-  const [data, setData] = React.useState(() => initialData);
+export function DataTable({ data }: { data: z.infer<typeof schema>[] }) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});

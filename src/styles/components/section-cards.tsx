@@ -9,14 +9,44 @@ import {
   CardTitle,
 } from "@/styles/components/ui/card";
 
-export function SectionCards() {
+interface DailyStats {
+  totalPageViews: number;
+  uniqueUsers: number;
+  avgSessionDuration: number;
+  activeSessionsCount: number;
+}
+
+interface SectionCardsProps {
+  data: DailyStats | undefined;
+  status: string;
+}
+
+export function SectionCards({ data, status }: SectionCardsProps) {
+  const renderValue = (
+    value: number | undefined,
+    options?: Intl.NumberFormatOptions,
+    suffix?: string,
+  ) => {
+    if (status !== "Connected") return "-";
+    if (!value)
+      return (
+        <span className="animate-pulse text-xl text-muted-foreground">
+          Loading...
+        </span>
+      );
+    if (typeof value === "number" && !isNaN(value)) {
+      return value.toLocaleString(undefined, options) + (suffix || "");
+    }
+    return "-";
+  };
+
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Total Page Views</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            12,345
+            {renderValue(data?.totalPageViews)}
           </CardTitle>
           <CardAction>
             <IconTrendingUp className="size-4" />
@@ -30,7 +60,7 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>Active Sessions</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            1,234
+            {renderValue(data?.activeSessionsCount)}
           </CardTitle>
           <CardAction>
             <IconTrendingUp className="size-4" />
@@ -44,7 +74,7 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>Unique Users</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            1,000
+            {renderValue(data?.uniqueUsers)}
           </CardTitle>
           <CardAction>
             <IconTrendingUp className="size-4" />
@@ -60,7 +90,11 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>Avg. Session Duration</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            5:23
+            {renderValue(
+              data?.avgSessionDuration,
+              { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+              " ms",
+            )}
           </CardTitle>
           <CardAction>
             <IconTrendingUp className="size-4" />
