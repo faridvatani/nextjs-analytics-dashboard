@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Real-Time Analytics Dashboard
 
-## Getting Started
+![Next.js Real-Time Analytics Dashboard](Screenshot.png)
+A modern, real-time analytics dashboard built with Next.js, React, Prisma, PostgreSQL, Docker, and Tailwind CSS.
 
-First, run the development server:
+This dashboard is designed to handle and visualize large amounts of analytical data in real time, using `server-sent events (SSE)` to continuously update the UI as new data arrives.
+
+---
+
+## ✨ Tech Stack
+
+- **Frontend:** [Next.js](https://nextjs.org/), [React](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/), [Shadcn UI](https://ui.shadcn.com/) (built on [Radix UI](https://www.radix-ui.com/))
+- **Backend:** [Prisma ORM](https://www.prisma.io/)
+- **Database:** [PostgreSQL](https://www.postgresql.org/)
+- **Other:** TypeScript, Server-Sent Events (SSE), Docker
+
+---
+
+## 💡 Features
+
+- Real-time data streaming to the client via Server-Sent Events (SSE)
+- Continuously seeded dummy data for live analytics simulation
+- Fully customizable, accessible UI components using Shadcn UI
+- Analytics-optimized data queries using advanced Prisma aggregations
+- Modular schema design with support for analytical tables
+- Tailwind CSS styling with easy customization
+- Example models: sessions, page views, interactions
+
+---
+
+## ⚙️ Architecture Overview
+
+- **Next.js custom server:** Enables long-lived SSE connections alongside standard request/response routes.
+- **PostgreSQL database:** Stores analytical data; you manage it using Docker for local development.
+- **Prisma:** Used as the ORM to define and query complex analytical data structures (e.g., grouping, aggregation).
+- **Real-time seeding:** The server continuously inserts new dummy data into the database every few seconds to simulate live traffic.
+
+---
+
+## 🚀 Setup Instructions
+
+### 1️⃣ Clone the repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/faridvatani/nextjs-analytics-dashboard.git
+cd nextjs-analytics-dashboard
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2️⃣ Install dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3️⃣ Configure environment variables
 
-## Learn More
+Copy `.env.example` to `.env` and fill in your database connection details:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cp .env.example .env
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Example connection string for local Docker Postgres:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```ini
+DATABASE_URL="postgresql://postgres:mysecretpassword@localhost:5432/mydb"
+```
 
-## Deploy on Vercel
+### 4️⃣ Start PostgreSQL with Docker
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+docker run --name postgres_container \
+  -e POSTGRES_PASSWORD=mysecretpassword \
+  -e POSTGRES_DB=mydb \
+  -d \
+  -p 5432:5432 \
+  -v postgres_data:/var/lib/postgresql/data \
+  postgres
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+To start the container again later:
+
+```bash
+docker start postgres_container
+```
+
+To stop it:
+
+```bash
+docker stop postgres_container
+```
+
+### 5️⃣ Set up the database schema
+
+```bash
+npx prisma migrate deploy
+# or
+pnpm prisma migrate deploy
+```
+
+### 6️⃣ Seed dummy data (optional)
+
+When you start the custom server, it will automatically start generating dummy data every few seconds to simulate active sessions and interactions.
+
+### 7️⃣ Start the application
+
+In one terminal, start the Next.js frontend:
+
+```bash
+pnpm dev
+```
+
+In another terminal, start the backend server:
+
+```bash
+pnpm dev:server
+```
+
+### 8️⃣ Access the dashboard
+
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
+You should see the dashboard automatically update with new data every few seconds — no page refresh needed.
+
+## 💬 Additional Notes
+
+- **Server-Sent Events (SSE):** This approach is simpler than websockets for one-way real-time updates (from server to client) and fits analytics dashboards very well.
+
+- **PostgreSQL (OLAP):** Although typical OLAP workloads use specialized databases, this project demonstrates how you can still achieve analytical queries in PostgreSQL using aggregations and optimized queries via Prisma.
+
+- **Prisma Models:** You can customize the models (Session, PageView, Interaction) to fit your own analytical needs. Check the prisma/schema.prisma file.
+
+- **Component Library:** Uses Shadcn UI for fully customizable, accessible React components styled with Tailwind CSS.
+
+## Aknowledgements
+
+Inspired by modern approaches to building real-time analytics dashboards.
+Big thanks to the open source community and all tool maintainers.
+
+## 🛠️ Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request if you have suggestions or improvements.
+Let me know if you'd also like to include example code snippets (like the custom server setup or SSE client code) directly in the README, or add diagrams showing the architecture!
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
